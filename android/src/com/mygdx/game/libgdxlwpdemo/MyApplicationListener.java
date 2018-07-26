@@ -1,9 +1,12 @@
 package com.mygdx.game.libgdxlwpdemo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,6 +37,7 @@ class MyApplicationListener implements ApplicationListener {
     //    private Box2DDebugRenderer mBox2DDebugRenderer;
     private TextureRegion mTextureRegion;
     private SpriteBatch mSpriteBatch;
+    private Color mBackground;
 
     MyApplicationListener(Context context) {
         mContext = context;
@@ -45,6 +49,8 @@ class MyApplicationListener implements ApplicationListener {
 
         mTextureRegion = new TextureRegion(new Texture(Gdx.files.internal("smile.png")));
         mSpriteBatch = new SpriteBatch();
+        mBackground = new Color();
+        getPreference();
         mWorld = new World(new Vector2(0, 0), false);
 
         PolygonShape polygonShape = new PolygonShape();
@@ -67,6 +73,14 @@ class MyApplicationListener implements ApplicationListener {
 
 //        mBox2DDebugRenderer = new Box2DDebugRenderer();
 //        gl.glLineWidth(5f);
+    }
+
+    private void getPreference() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        int color = sharedPreferences.getInt("background", 0);
+        mBackground.r = android.graphics.Color.red(color) / 255f;
+        mBackground.g = android.graphics.Color.green(color) / 255f;
+        mBackground.b = android.graphics.Color.blue(color) / 255f;
     }
 
     private Body createBody(BodyDef.BodyType bodyType, Vector2 position, Shape shape) {
@@ -106,7 +120,7 @@ class MyApplicationListener implements ApplicationListener {
         mWorld.setGravity(new Vector2(-Gdx.input.getAccelerometerX(), -Gdx.input.getAccelerometerY()));
         mWorld.step(Gdx.graphics.getDeltaTime(), 10, 6);
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(mBackground.r, mBackground.g, mBackground.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //        mBox2DDebugRenderer.render(mWorld, mCameraCombined);
@@ -127,7 +141,7 @@ class MyApplicationListener implements ApplicationListener {
 
     @Override
     public void resume() {
-
+        getPreference();
     }
 
     @Override
