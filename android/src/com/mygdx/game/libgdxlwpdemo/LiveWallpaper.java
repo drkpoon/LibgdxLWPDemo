@@ -11,6 +11,12 @@ public class LiveWallpaper extends AndroidLiveWallpaperService {
     ApplicationListener mApplicationListener;
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mApplicationListener.dispose();
+    }
+
+    @Override
     public void onCreateApplication() {
         super.onCreateApplication();
         AndroidApplicationConfiguration androidApplicationConfiguration = new AndroidApplicationConfiguration();
